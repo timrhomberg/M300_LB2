@@ -19,5 +19,6 @@ RUN apt-get -y install webmin
 
 HEALTHCHECK --interval=5m --timeout=3s CMD curl -f https://localhost:10000 || exit 1
 
-EXPOSE 80
-EXPOSE 443
+EXPOSE 10000
+
+CMD /usr/bin/touch /var/webmin/miniserv.log && /usr/sbin/service webmin restart && /usr/bin/tail -f /var/webmin/miniserv.log
