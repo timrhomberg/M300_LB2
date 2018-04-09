@@ -4,6 +4,7 @@ Dockerfile
 ----------
 
 ![](Konzept.png)
+
 Als image verwendete ich die aktuellste Version von Ubuntu.
 ```
 FROM ubuntu:16.04
