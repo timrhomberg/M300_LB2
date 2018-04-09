@@ -29,6 +29,44 @@ VOLUME /var/www/html
 CMD /bin/bash -c "source /etc/apache2/envvars && exec /usr/sbin/apache2 -DFOREGROUND"
 ```
 
+### Index.html
+```
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <title>DNS NSLOOKUP Service</title>
+        <script>
+            $(document).ready(function() {
+
+                var x = document.getElementById("domainname").value;
+                $("button").click(function() {
+                    $.get("http://localhost:8081/?google.ch", function(data) {
+                        $("#dn").html(data);
+                        document.getElementById("mytext").value = data;
+                    });
+                });
+            });
+
+        </script>
+    </head>
+    <body>
+    <h1>DNS NSLOOKUP Service</h1>
+        
+    Domainname name: <input id="domainname" type="text" name="domainname"><br>
+    <button>Click me</button>
+    <p id="dn"></p>
+        <input type="text" id="mytext">
+    </body>
+</html>
+```
+
+### Container starten
+```
+docker build -t apache .
+docker run -d --name apache apache
+```
 
 Node.js
 ---------
@@ -81,24 +119,13 @@ console.log('Server running at http://127.0.0.1:8081/');
 
 ```
 
+### Container starten
+```
+docker build -t nodejs .
+docker run -d --name nodejs nodejs
+```
 
 MongoDB
 ---------
 ### Dockerfile
 
-Als image verwendete ich die aktuellste Version von Ubuntu.
-```
-FROM ubuntu:16.04
-```
-
-Container starten
------------------
-
-```
-docker build -t webmin .
-docker run --rm -d --name webmin5 webmin5 --network="bridge"
-```
-
-
-
-docker exec -it webmin bash
