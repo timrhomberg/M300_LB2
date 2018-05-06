@@ -11,7 +11,7 @@ ENV APACHE_LOG_DIR /var/log/apache2
 
 RUN mkdir -p /var/lock/apache2 /var/run/apache2
 
-EXPOSE 80
+# EXPOSE 80
 
 VOLUME /var/www/html
 

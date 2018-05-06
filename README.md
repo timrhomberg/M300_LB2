@@ -1,5 +1,48 @@
 # M300_LB2
 
+NextCloud mit mysql
+----------
+Vagrantfile:
+```
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/xenial64"
+
+  # Create a public network, which generally matched to bridged network.
+  #config.vm.network "public_network"
+  config.vm.network "private_network", ip:"192.168.60.101" 
+  config.vm.network "forwarded_port", guest:8080, host:8080, auto_correct: true
+  
+  # Share an additional folder to the guest VM.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  config.vm.provider "virtualbox" do |vb|
+     vb.memory = "2048"
+  end
+
+  # Docker Provisioner
+  config.vm.provision "docker" do |d|
+   d.pull_images "mysql"
+   d.pull_images "nextcloud"
+   d.run "nextcloud_mysql", image: "mysql", args: "-e MYSQL_ROOT_PASSWORD=secret -e MYSQL_USER=nextcloud -e MYSQL_PASSWORD=secret -e MYSQL_DATABASE=nextcloud --restart=always"
+   d.run "nextcloud", image: "nextcloud", args: "--link nextcloud_mysql:mysql -p 8080:80 --restart=always"
+  end
+end
+
+```
+Ich habe 2 Images verwendet. Das erste Image ist mysql und das 2. Image ist nextcloud.
+Anschliessend wird mysql ausgeführt. Es werden folgende Paramter verwendet:
+* MYSQL_ROOT_PASSWORD=secret
+* MYSQL_USER=nextcloud
+* MYSQL_PASSWORD=secret
+* MYSQL_DATABASE=nextcloud
+
+Für den nextcloud Container habe ich folgende Paramter verwendet:
+* --link nextcloud_mysql:mysql
+* -p 8080:80
+* --restart=always
+
+
 Konzept
 ----------
 
@@ -65,7 +108,7 @@ CMD /bin/bash -c "source /etc/apache2/envvars && exec /usr/sbin/apache2 -DFOREGR
 ### Container starten
 ```
 docker build -t apache .
-docker run -d --name apache apache
+docker run -d -p 1000:80 -v ~/M300_LB2/apache/web:/var/www/html --name apache apache
 ```
 
 Node.js
@@ -122,10 +165,5 @@ console.log('Server running at http://127.0.0.1:8081/');
 ### Container starten
 ```
 docker build -t nodejs .
-docker run -d --name nodejs nodejs
+docker run -d -p 1100:8081 -v ~/M300_LB2/nodejs:/opt/node --name nodejs nodejs
 ```
-
-MongoDB
----------
-### Dockerfile
-
