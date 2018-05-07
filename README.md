@@ -51,14 +51,25 @@ Webmin ist eine webbasierte Schnittstelle zur Systemadministration für Unix. Mi
 ```
 FROM ubuntu:16.04
 MAINTAINER Tim Rhomberg <timrhomberg@hotmail.com>
-
+```
+Als erstes wird ein Update der Paketquellen durchgeführt und das Webmin Repository in die Datei /etc/apt/sources.list.
+```
 RUN apt-get -qq update
 RUN apt-get -y -qq install wget
 RUN sed -i '$adeb https://download.webmin.com/download/repository sarge contrib' /etc/apt/sources.list
 RUN cd /root
+```
+Danach wird der Key des Repository heruntergeladen und hinzugefügt.
+```
 RUN wget http://www.webmin.com/jcameron-key.asc
 RUN apt-key add jcameron-key.asc
+```
+Anschliessend wird das Paket apt-transport-https installiert um ein HTTPS Repository hinzuzufügen.
+```
 RUN apt-get -y -qq install apt-transport-https
+```
+Installation von Webmin.
+```
 RUN apt-get -qq update
 RUN apt-get -y install apt-utils
 RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes
@@ -67,11 +78,17 @@ RUN rm /var/lib/apt/lists/*lz4
 RUN apt-get -o Acquire::GzipIndexes=false update
 RUN apt-get -y install apt-show-versions
 RUN apt-get -y install webmin
-
+```
+Healthcheck alle 5 Minuten auf die Webmin Oberfläche.
+```
 HEALTHCHECK --interval=5m --timeout=3s CMD curl -f https://localhost:10000 || exit 1
-
+```
+Der Port 10000 sollte freigegeben werden.
+```
 EXPOSE 10000
-
+```
+Beim Starten des Container sollte folgendes ausgeführt werden.
+```
 CMD /usr/bin/touch /var/webmin/miniserv.log && /usr/sbin/service webmin restart && /usr/bin/tail -f /var/webmin/miniserv.log
 ```
 
