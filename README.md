@@ -95,5 +95,5 @@ CMD /usr/bin/touch /var/webmin/miniserv.log && /usr/sbin/service webmin restart 
 ### Container starten
 ```
 docker build -t webmin .
-docker run -d -p 1000:443  --name webmin webmin
+docker run -d -p 1000:10000  --name webmin webmin
 ```
